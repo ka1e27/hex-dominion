@@ -6,10 +6,10 @@
 //   npm start                        # in another terminal
 //   node tools/check.mjs             # desktop 1440x900 (mouse) then phone 390x844 (touch)
 //   node tools/check.mjs --only=phone --url=http://localhost:8080
-//   node tools/check.mjs --base=/temp/     # the DEPLOYED shape: see below
+//   node tools/check.mjs --base=/hex-dominion/     # the DEPLOYED shape: see below
 //
-// --base=/temp/ starts its own server (tools/serve.js) that serves the repo under that prefix with NOTHING at
-// "/", exactly like GitHub Pages (https://ka1e27.github.io/temp/), runs the whole suite below against it with
+// --base=/hex-dominion/ starts its own server (tools/serve.js) that serves the repo under that prefix with NOTHING at
+// "/", exactly like GitHub Pages (https://ka1e27.github.io/hex-dominion/), runs the whole suite below against it with
 // the service worker registered (?sw=1), and then the deploy checks: every same-origin request resolves under the
 // prefix (no 404s, right MIME types), the worker registers with the prefix as its scope and caches under it, the
 // manifest's start_url / scope / icons resolve, classic.html still loads the v1 game, and after ONE visit a reload
@@ -84,7 +84,7 @@ const httpGet = (url) => new Promise((resolve, reject) => {
 });
 
 // --base: our own server under a project subpath, like Pages. Otherwise an already-running one (npm start).
-// (Git Bash on Windows turns "--base=/temp/" into "C:/Program Files/Git/temp/": a drive-letter path means its last segment.)
+// (Git Bash on Windows turns "--base=/hex-dominion/" into "C:/Program Files/Git/hex-dominion/": a drive-letter path means its last segment.)
 const baseText = String(flags.base || '').replace(/\\/g, '/');
 const baseSeg = /^[A-Za-z]:/.test(baseText) ? baseText.split('/').filter(Boolean).pop() : baseText.replace(/^\/+|\/+$/g, '');
 const SUBPATH = baseSeg ? `/${baseSeg}` : '';

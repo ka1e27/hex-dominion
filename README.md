@@ -1,6 +1,6 @@
 # Hex Dominion
 
-[![Hex Dominion: a lush level-III realm with keeps, windmills, banners and caravans beside the sea](og.png)](https://ka1e27.github.io/temp/)
+[![Hex Dominion: a lush level-III realm with keeps, windmills, banners and caravans beside the sea](og.png)](https://ka1e27.github.io/hex-dominion/)
 
 Idle conquest on a living, procedurally generated hex continent. Your banner holds one small
 corner under drifting clouds. Every region you conquer pays you gold forever, even while you are
@@ -9,8 +9,8 @@ Battles are fast (about a minute, rarely more than three), fought on the map its
 between settlements, intercept marches in the field, call down fire, take the enemy keep. Conquer
 the whole continent, then found a dynasty and do it again on a new world.
 
-**Play it: https://ka1e27.github.io/temp/** (desktop or phone, nothing to install). The original
-v1 game is still here as [`classic.html`](https://ka1e27.github.io/temp/classic.html).
+**Play it: https://ka1e27.github.io/hex-dominion/** (desktop or phone, nothing to install). The original
+v1 game is still here as [`classic.html`](https://ka1e27.github.io/hex-dominion/classic.html).
 
 Static site, vanilla ES modules, zero dependencies, no build step.
 
@@ -111,7 +111,7 @@ npm start                  # static dev server -> http://localhost:8080/
 
 ES modules cannot load from `file://`, so opening `index.html` directly will not work. Any static
 server does (`python3 -m http.server 8080`). Everything is relative-pathed because the site lives
-under `/temp/` on GitHub Pages.
+under `/hex-dominion/` on GitHub Pages.
 
 ## Develop
 
@@ -134,7 +134,7 @@ is the default on Windows).
 | `node tools/iconcheck.mjs` | Icon-only buttons: the icon centred within 1 px of its button, inside its bar, and touch hit areas of at least 44 px. |
 | `node tools/gallery/works-check.mjs`, `node tools/gallery/keepsakes-check.mjs` | The Region Works and Keepsakes component galleries, checked in a real browser. |
 | `node tools/rc2shots.mjs [--variant=desktop\|phone\|both]` | Re-shoots the release gallery into `screenshots/game/rc2-*.png`: title, first screen with the outlined region, the tutorial battle with the shape arrow, the victory crowns, a mid-game realm with Works, the Regions list, a scouted card, the Realm panel with the Chronicle and a Tapestry. |
-| `node tools/check.mjs --base=temp` | The deployed shape: serves the repo under a `/temp/` subpath with nothing at `/` (like Pages), registers the service worker and adds the deploy checks (no 404s, MIME types, manifest and icon sizes, `classic.html` loads, a reload with the network off). It starts its own server. In Git Bash write `temp`, not `/temp/` (MSYS rewrites the latter). |
+| `node tools/check.mjs --base=hex-dominion` | The deployed shape: serves the repo under a `/hex-dominion/` subpath with nothing at `/` (like Pages), registers the service worker and adds the deploy checks (no 404s, MIME types, manifest and icon sizes, `classic.html` loads, a reload with the network off). It starts its own server. In Git Bash write `hex-dominion`, not `/hex-dominion/` (MSYS rewrites the latter). |
 | `node tools/shots.mjs [--only=desktop\|phone\|battle\|hook\|intel\|living]` | Screenshot tour of the real game into `screenshots/game/` (git-ignored). `tools/supplyshots.mjs` photographs the supply-line and front-line UI. |
 | `node tools/docshots.mjs` | Retakes this README's two images (`docs/img/realm.jpg`, `docs/img/battle.jpg`) from the real game. |
 | `node tools/playtest.mjs --variant=desktop\|phone` | A first-session playtest as a brand-new player using real input; prints a timeline of panels, overlaps and clipped text. Meant to be read, not a pass/fail gate. |

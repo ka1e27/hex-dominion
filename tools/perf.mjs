@@ -4,7 +4,7 @@
 //   node tools/perf.mjs --only=load,frames --runs=5 --proto=h1 --json=out.json --label=before
 //
 // - load: a cold profile per run, Chrome's "Fast 4G" (165 ms RTT, 8.1 Mb/s down, 1.35 Mb/s up) and 4x CPU slowdown, against a Pages-shaped
-//   server (tools/perfServer.js: /temp/, gzip, HTTP/2 over TLS like Pages' CDN; --proto=h1 for plain HTTP/1.1). "Title" is the first frame
+//   server (tools/perfServer.js: /hex-dominion/, gzip, HTTP/2 over TLS like Pages' CDN; --proto=h1 for plain HTTP/1.1). "Title" is the first frame
 //   with the New Realm button on screen and the splash gone; the tool then presses it for real at once, and "map" is the second frame of the
 //   world scene. Both are measured from navigation start in the page (performance.now). Median of --runs.
 // - frames: 4x CPU slowdown, 1440x900 (DPR 1), the GPU ON (cdp.js `gpu: true`; --disable-gpu frame times are software-raster numbers): the

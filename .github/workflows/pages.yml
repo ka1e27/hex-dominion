@@ -40,7 +40,7 @@ jobs:
   # real browser prove the game is clickable. tools/check.mjs boots the game in
   # headless Chrome (via tools/cdp.js, no dependencies), clicks through New Realm,
   # starts a battle, drag-sends troops, wins, and reloads to check the save — at
-  # desktop size and at phone size with touch — and once more under the /temp/ prefix.
+  # desktop size and at phone size with touch — and once more under the /hex-dominion/ prefix.
   browser:
     runs-on: ubuntu-latest
     steps:
@@ -67,12 +67,12 @@ jobs:
           fi
       - name: Smoke test in a real browser
         run: node tools/check.mjs
-      # The site is served from a PROJECT SUBPATH (https://ka1e27.github.io/temp/), never from "/". This runs the
-      # same suite against a server that serves the repo under /temp/ with nothing at "/" (like Pages), then checks
+      # The site is served from a PROJECT SUBPATH (https://ka1e27.github.io/hex-dominion/), never from "/". This runs the
+      # same suite against a server that serves the repo under /hex-dominion/ with nothing at "/" (like Pages), then checks
       # the deployed shape: every asset resolves under the prefix, the service worker's scope and cache, the
       # manifest's start_url and icons, classic.html, and an offline reload after one visit.
-      - name: Smoke test under the /temp/ subpath (service worker, manifest, offline)
-        run: node tools/check.mjs --base=temp
+      - name: Smoke test under the /hex-dominion/ subpath (service worker, manifest, offline)
+        run: node tools/check.mjs --base=hex-dominion
 
   deploy:
     needs: [verify, browser]
@@ -88,7 +88,7 @@ jobs:
       - name: Package the site
         uses: actions/upload-pages-artifact@v3
         with:
-          # Served from a subpath (/temp/); every asset reference is relative.
+          # Served from a subpath (/hex-dominion/); every asset reference is relative.
           path: .
       - name: Deploy
         id: deployment

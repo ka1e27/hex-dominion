@@ -622,7 +622,7 @@ The map is the progress bar: you should *see* your empire grow and work.
 
 ## 8. Platform
 
-- Static site on GitHub Pages at `https://ka1e27.github.io/temp/`. All paths relative.
+- Static site on GitHub Pages at `https://ka1e27.github.io/hex-dominion/`. All paths relative.
 - Zero dependencies, no build step, vanilla ES modules. Google Fonts via `<link>` with system
   fallbacks.
 - Works on desktop (mouse + keyboard) and phones (touch: tap-select, drag-send, pinch-zoom,

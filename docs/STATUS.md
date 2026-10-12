@@ -790,3 +790,8 @@ Sonnet 5.5 (`sonnet55-engineer`) is no longer preferred.
     the effect line's label + the shown number) -> desktop + phone rerun green, --base=temp green. The gate also caught a real bug: base.css
     `:where(#ui *) { pointer-events: auto }` made the power-bar caption's words swallow taps (textaudit "covered"); `.power-rule *` lets them
     through now. Ready to deploy; waits for "deploy Phase 16".
+- **Phase 16 LIVE at 9b9fa88** (2026-10-09, at the user's "deploy Phase 16"; CI green: verify, browser, deploy).
+- **Repo renamed to ka1e27/hex-dominion** (2026-10-12, the user's call): the game is at https://ka1e27.github.io/hex-dominion/ (the old /temp/ link 404s;
+  saves survive, same origin). Living references updated (og tags, README, CLAUDE.md, ARCHITECTURE/DESIGN, pages.yml `--base=hex-dominion`,
+  serve/perf tools); history logs keep `--base=temp`. The rename triggered a legacy Pages build from an old branch (Pages' source was still
+  "deploy from branch") that put the old game live: re-ran the deploy for 9b9fa88 and, at the user's OK, switched Pages to GitHub Actions only.

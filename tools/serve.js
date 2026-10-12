@@ -2,15 +2,15 @@
 // ES modules require a real HTTP origin (see the file:// guard in index.html).
 //
 //   node tools/serve.js                       # the repo at http://localhost:8080/
-//   node tools/serve.js --base=/temp/         # the repo at http://localhost:8080/temp/, NOTHING at /
+//   node tools/serve.js --base=/hex-dominion/         # the repo at http://localhost:8080/hex-dominion/, NOTHING at /
 //   node tools/serve.js --root=_site --port=9000
 //   node tools/serve.js --hooks               # test hooks for tools/check.mjs --base: ?__respond=503 answers with that status (an HTML error page), ?__portal=1 answers
 //                                             # 200 text/html whatever was asked for (a captive portal), so the service worker's fallbacks can be exercised for real
 //   env: PORT, BASE_PATH, ROOT_DIR (flags win)
 //
-// GitHub Pages serves this site from a project subpath (https://ka1e27.github.io/temp/), never from
+// GitHub Pages serves this site from a project subpath (https://ka1e27.github.io/hex-dominion/), never from
 // "/". `--base` reproduces that exactly: every request must carry the prefix, "/" is a 404, and
-// "/temp" redirects to "/temp/" like Pages does. Anything that only works from "/" (an absolute
+// "/hex-dominion" redirects to "/hex-dominion/" like Pages does. Anything that only works from "/" (an absolute
 // path, a service worker scope, a manifest start_url) then fails here instead of in production.
 import { createServer } from 'node:http';
 import { readFile } from 'node:fs/promises';
@@ -28,8 +28,8 @@ const ROOT = rootArg ? resolve(isAbsolute(rootArg) ? rootArg : join(process.cwd(
 const PORT = Number(flags.port ?? process.env.PORT) || 8080;
 
 /**
- * '/temp/' -> '/temp'; '' or '/' -> '' (served from the root). Git Bash on Windows rewrites an argument like
- * "/temp/" into "C:/Program Files/Git/temp/" before Node sees it: a drive-letter path means its last segment.
+ * '/hex-dominion/' -> '/hex-dominion'; '' or '/' -> '' (served from the root). Git Bash on Windows rewrites an argument like
+ * "/hex-dominion/" into "C:/Program Files/Git/hex-dominion/" before Node sees it: a drive-letter path means its last segment.
  */
 function normaliseBase(raw) {
   let text = String(raw || '').trim().replace(/\\/g, '/');

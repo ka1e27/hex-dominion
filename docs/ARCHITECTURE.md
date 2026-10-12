@@ -123,7 +123,7 @@ docs/       DESIGN.md ARCHITECTURE.md   what / how (source of truth)
             INTEGRATION-NOTES.md MUSIC.md PLAYFEEL.md STATUS.md BACKLOG.md briefs/ img/ legacy/
 tools/                                  (none of it is imported by the game)
   serve.js cdp.js                       static server (--base, --root, --port); DevTools-protocol driver, no deps
-  check.mjs                             real-input smoke gate; --base=temp is the deployed-shape run (SW, offline, manifest); --only=desktop|phone|robust|keepsakes|playtest|deploy
+  check.mjs                             real-input smoke gate; --base=hex-dominion is the deployed-shape run (SW, offline, manifest); --only=desktop|phone|robust|keepsakes|playtest|deploy
   robustChecks.mjs keepsakeChecks.mjs playtestChecks.mjs   the robustness, Keepsakes and playtest-fix scenarios check.mjs runs (own Chrome each)
   a11ycheck.mjs                         the accessibility tree, dialogs, touch targets, Reduce Motion and a keyboard-only game
   shots.mjs playtest.mjs                screenshot tour; first-session playtest with real input

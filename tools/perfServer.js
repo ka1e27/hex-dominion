@@ -1,4 +1,4 @@
-// A GitHub-Pages-shaped server for tools/perf.mjs: the repo under /temp/, gzip on text files, and (by default) HTTP/2 over TLS like
+// A GitHub-Pages-shaped server for tools/perf.mjs: the repo under /hex-dominion/, gzip on text files, and (by default) HTTP/2 over TLS like
 // Pages' CDN. The protocol matters for a throttled first load: HTTP/1.1 holds Chrome to 6 connections per host, so ~250 modules at a
 // 165 ms round trip queue for seconds that a real visitor (HTTP/2, one multiplexed connection) never waits. A self-signed certificate
 // is made once with openssl (Git for Windows and every Linux CI ship it) and Chrome is launched with --ignore-certificate-errors.
@@ -43,10 +43,10 @@ async function certificate() {
 }
 
 /**
- * Starts the server. Resolves to { origin, base, proto, close, stats } where `base` is `${origin}/temp`.
+ * Starts the server. Resolves to { origin, base, proto, close, stats } where `base` is `${origin}/hex-dominion`.
  * @param {{ port?: number, proto?: 'h2'|'h1', subpath?: string }} [opts]
  */
-export async function startPerfServer({ port = 0, proto = 'h2', subpath = '/temp', root = REPO } = {}) {
+export async function startPerfServer({ port = 0, proto = 'h2', subpath = '/hex-dominion', root = REPO } = {}) {
   const ROOT = resolve(root);
   const cache = new Map(); // path -> { body, gz, type }
   const stats = { requests: 0, bytes: 0 };

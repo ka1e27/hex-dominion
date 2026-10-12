@@ -19,7 +19,7 @@
 // ready, which the worker fetches into the same cache.
 //
 // Everything is relative to the worker's SCOPE, never to "/": the site lives under a project
-// subpath (https://ka1e27.github.io/temp/).
+// subpath (https://ka1e27.github.io/hex-dominion/).
 const CACHE_PREFIX = 'hexdominion-';
 const CACHE = 'hexdominion-v2-5';
 const SHELL = ['./', './index.html', './manifest.webmanifest', './favicon.svg', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './apple-touch-icon.png'];

@@ -30,7 +30,7 @@ Browser tools use `tools/cdp.js` (Chrome DevTools protocol, no deps). On this ma
 ## Rules that matter
 
 - All new code under `game/`. Vanilla ES modules, relative paths only (GitHub Pages serves
-  the site from `/temp/`).
+  the site from `/hex-dominion/`).
 - `game/core`, `game/world`, `game/battle`, `game/meta` are pure: no DOM, no `window`, no
   `Math.random`, no `Date.now`, no `performance`, no storage. Inject them.
 - Battles are deterministic; battle/game state is plain JSON (saved to localStorage).
