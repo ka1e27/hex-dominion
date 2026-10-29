@@ -12,6 +12,7 @@ import { checkShrines } from './features.js';
 import { damageDragon } from './dragon.js';
 import { onAssaultTrade, onClash } from './fallen.js';
 import { throneDefMult, usurperStands } from './throne.js';
+import { casualty } from './casualties.js';
 import {
   boonsOf, squadStrengthMult, assaultStrengthMult, onCapture, secondWind, besiegedGrowthMult, garrisonBoonMult,
 } from './boons.js';
@@ -95,6 +96,8 @@ export function resolveCombat(battle, dt, t) {
     });
     squad.count = Math.max(0, traded.atkTroops);
     foe.count = Math.max(0, traded.defTroops);
+    casualty(battle, squad.owner, beforeA - squad.count); // PLAN-PHASE17: counted as they fall, not only a squad's last troops
+    casualty(battle, foe.owner, beforeB - foe.count);
     onClash(battle, t, squad, beforeA, foe, beforeB); // the losses log Raise the Fallen reads (PLAN-PHASE6)
     const aDead = isDead(squad.count);
     const bDead = isDead(foe.count);
@@ -102,9 +105,9 @@ export function resolveCombat(battle, dt, t) {
       const pos = squadPosition(battle, squad);
       const winner = aDead && bDead ? null : (aDead ? foe.id : squad.id);
       battle.events.push({ type: 'clashEnd', x: pos.x, y: pos.y, winner });
-      if (aDead) { dead.add(squad.id); creditLoss(battle, squad.owner, beforeA); }
+      if (aDead) { dead.add(squad.id); casualty(battle, squad.owner, squad.count); } // the few left under the death threshold
       else { squad.state = 'march'; squad.foe = null; }
-      if (bDead) { dead.add(foe.id); creditLoss(battle, foe.owner, beforeB); }
+      if (bDead) { dead.add(foe.id); casualty(battle, foe.owner, foe.count); }
       else { foe.state = 'march'; foe.foe = null; }
     }
   }
@@ -149,6 +152,9 @@ export function resolveCombat(battle, dt, t) {
       if (isDead(s.count)) dead.add(s.id);
     }
     site.troops = Math.max(0, traded.defTroops);
+    // PLAN-PHASE17: both sides' losses as they fall; the player's are kept against this site (the defeat card names it)
+    casualty(battle, attackerOwner, countBefore - squads.reduce((sum, s) => sum + (dead.has(s.id) ? 0 : s.count), 0), site.id);
+    casualty(battle, site.owner, beforeDef - site.troops);
     if ((boons.turncoatShare || boons.ghostShare) && attackerOwner === PLAYER_OWNER) site.assault.lost = (site.assault.lost || 0) + (beforeDef - site.troops); // Turncoats
     // The Ashen Host (PLAN-PHASE6): The Fallen Rise, war-band growth, the Gravewarden's passive, the losses log
     const alive = squads.filter((s) => !dead.has(s.id));
@@ -161,7 +167,7 @@ export function resolveCombat(battle, dt, t) {
       const survivors = squads.filter((s) => !dead.has(s.id));
       const garrison = survivors.reduce((sum, s) => sum + s.count, 0);
       const fromOwner = site.owner;
-      creditLoss(battle, fromOwner, beforeDef);
+      casualty(battle, fromOwner, site.troops); // the few left under the death threshold
       site.owner = attackerOwner;
       site.troops = garrison;
       site.cap = effectiveCap(site.type, site.owner, player, site.capMult, site.pCapMult);
@@ -181,11 +187,6 @@ export function resolveCombat(battle, dt, t) {
   }
 
   if (dead.size) battle.squads = battle.squads.filter((s) => !dead.has(s.id));
-}
-
-function creditLoss(battle, owner, amount) {
-  if (owner === PLAYER_OWNER) battle.stats.lost += amount;
-  else battle.stats.killed += amount;
 }
 
 /** Growth below cap, bleed above cap (DESIGN §4.2). */

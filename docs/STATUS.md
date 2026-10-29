@@ -795,3 +795,9 @@ Sonnet 5.5 (`sonnet55-engineer`) is no longer preferred.
   saves survive, same origin). Living references updated (og tags, README, CLAUDE.md, ARCHITECTURE/DESIGN, pages.yml `--base=hex-dominion`,
   serve/perf tools); history logs keep `--base=temp`. The rename triggered a legacy Pages build from an old branch (Pages' source was still
   "deploy from branch") that put the old game live: re-ran the deploy for 9b9fa88 and, at the user's OK, switched Pages to GitHub Actions only.
+- **2026-10-29 PHASE 17 (Honest numbers, a defeat that explains itself) built** at the user's "make the game better" (docs/PLAN-PHASE17.md).
+  A first-session playtest's results card read "3 killed · 0 lost" after grinding a 98-troop keep down: the counts
+  missed every assault trade and every arrow, power and Tide. battle/casualties.js now counts each troop where it dies
+  (bookkeeping only; an A/B of nine bot battles gave byte-identical state). The player's losses per site (stats.fellAt) let
+  the defeat AND retreat cards name the settlement that broke the attack, with advice for its kind and a red pulse on it.
+  "Trading badly" now needs lost > 2 × killed. npm 1265.

@@ -154,3 +154,13 @@ export const POWERS = Object.freeze({
   levy:      { cooldown: 45, troops: 8, troopsPerLevel: 2 },
   cooldownPerLevel: 0.95,    // each level past 1 multiplies the cooldown by this
 });
+
+// The defeat card's tip (PLAN-PHASE17, app/defeatTip.js): name the settlement that broke the attack when at least `minLost`
+// of your troops fell against it, and at least `minShare` of all you lost (battle/casualties.js costliestSite).
+// `badTrade`: "you are trading troops badly" only above this lost/killed. Measured over 126 bot defeats and 77 wins with
+// honest counts: wins run 1.22 at the median (attacking costs more than it kills), defeats 0.85, the worst tenth of defeats 1.9.
+export const AFTER_ACTION = Object.freeze({
+  minLost: 10,
+  minShare: 0.4,
+  badTrade: 2,
+});

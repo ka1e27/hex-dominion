@@ -11,6 +11,7 @@
 import { TIDE, BROADSIDE } from '../config/sea.js';
 import { PLAYER_OWNER } from './owner.js';
 import { getRuntime, tileAt } from './runtime.js';
+import { casualty } from './casualties.js';
 
 /** The sea state, created lazily (a battle saved before Phase 12 has none). */
 export function seaState(battle) {
@@ -113,6 +114,7 @@ function processTide(battle, t) {
     if (at == null || !flooded.has(at)) continue;
     const lost = q.count * TIDE.loss;
     q.count -= lost;
+    casualty(battle, q.owner, lost); // PLAN-PHASE17
     q.tide = s.n;
     st.drowned = (st.drowned || 0) + lost; // the tally (results screen, tools)
     const p = tileAt(battle, at);
@@ -153,6 +155,7 @@ function processBroadside(battle, dt, t) {
     if (!s.coastal || s.owner === PLAYER_OWNER || !(s.troops > 0)) continue;
     const lost = s.troops * b.perSec * dt;
     s.troops -= lost;
+    casualty(battle, s.owner, lost);
     b.acc[s.id] = (b.acc[s.id] || 0) + lost;
     if (b.acc[s.id] >= 1) {
       const count = Math.floor(b.acc[s.id]);

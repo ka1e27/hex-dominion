@@ -7,6 +7,7 @@ import { squadPosition } from './position.js';
 import { PLAYER_OWNER, FREE_FOLK_OWNER } from './owner.js';
 import { towerRangeMult } from './features.js';
 import { towerIntervalMult, towerIgnores, onArrow, towerRangeBoonMult } from './boons.js';
+import { casualty } from './casualties.js';
 
 export { PLAYER_OWNER, FREE_FOLK_OWNER };
 
@@ -156,7 +157,9 @@ export function resolveTowerVolleys(battle, runtime, t) {
     if (!best) continue;
     const stats = ownerStats(site.owner, player, arena.enemyFaction, enemy);
     const kills = onArrow(battle, site, best, cfg.volleyKills * stats.atk, t); // Phalanx cuts it; Fire Arrows ignite (PLAN-PHASE7)
+    const beforeArrow = best.count;
     best.count = Math.max(0, best.count - kills);
+    casualty(battle, best.owner, beforeArrow - best.count, site.id); // PLAN-PHASE17: the tower that thinned the march is named
     const pos = squadPosition(battle, best);
     battle.events.push({
       type: 'arrow', site: site.id, squad: best.id,

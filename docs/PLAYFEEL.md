@@ -89,9 +89,11 @@ boot ──► title ──► world ⇄ battle ──► (victory|defeat card) 
 
 ### Defeat / retreat
 - Defeat: the camp's banner falls, a sombre `defeat` sting, the card offers a tip picked
-  from the situation ("Forts defend at 1.8× — soften them with Firestorm first",
-  "Upgrade Muster to arrive with a bigger army", …) and *Try again* / *Back to map*.
-- Retreat asks for confirmation, then shows a lighter card.
+  from the situation and *Try again* / *Back to map*. When one settlement broke the attack the tip names it, with the
+  count and the advice for its kind ("64 of the 98 troops you lost fell at the keep of Lowshire. A keep defends at 1.6×
+  and regrows while you wait: …"), and a red ring pulses on it behind the card (PLAN-PHASE17, app/defeatTip.js).
+  Otherwise: advice from the battle's shape ("Forts defend at 1.8×: soften them with Firestorm first", …).
+- Retreat asks for confirmation, then shows a lighter card: "No harm done." and the same named-site line when there is one.
 
 ## 4. Tutorial (first realm; each hint dismissible; "Hints" setting disables; "Replay tutorial" in Settings)
 

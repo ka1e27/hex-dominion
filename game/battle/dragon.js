@@ -16,6 +16,7 @@ import { FEATURES } from '../config/features.js';
 import { PLAYER_OWNER } from './owner.js';
 import { tileAt } from './runtime.js';
 import { squadPosition } from './position.js';
+import { casualty } from './casualties.js';
 import { worldDist, hexRadiusToWorld } from './geom.js';
 
 const D = FEATURES.dragon;
@@ -99,12 +100,19 @@ function breathe(battle, t) {
   let hits = 0;
   for (const q of battle.squads) {
     if (q.owner !== PLAYER_OWNER) continue;
-    if (worldDist(squadPosition(battle, q), { x, y }) <= r) { q.count = Math.max(0, q.count - burn(q.count)); hits += 1; }
+    if (worldDist(squadPosition(battle, q), { x, y }) <= r) {
+      const before = q.count;
+      q.count = Math.max(0, q.count - burn(q.count));
+      casualty(battle, q.owner, before - q.count); // PLAN-PHASE17
+      hits += 1;
+    }
   }
   for (const s of battle.sites) {
     if (s.owner !== PLAYER_OWNER) continue;
     if (worldDist(tileAt(battle, s.tile), { x, y }) <= r) {
+      const before = s.troops;
       s.troops = Math.max(0, s.troops - burn(s.troops) * (t < s.bulwarkUntil ? D.bulwarkCut : 1));
+      casualty(battle, s.owner, before - s.troops);
       hits += 1;
     }
   }

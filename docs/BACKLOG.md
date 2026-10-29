@@ -116,7 +116,7 @@ Each run plays differently, not just bigger. Every edict must pass `campaign.mjs
 ## Small polish (any round)
 - Haptics on capture/victory (`navigator.vibrate`, off under Reduce Motion).
 - Par-time ghost in the battle HUD.
-- Defeat tips that name the specific site that broke you.
+- ~~Defeat tips that name the specific site that broke you.~~ Done in PLAN-PHASE17 (the retreat card too).
 - Colour-blind pass on faction colours and emblems in the real game.
 - Frontier regions whose label changed since your last visit show an up/down arrow ("now Fair").
 

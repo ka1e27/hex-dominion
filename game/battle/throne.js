@@ -20,6 +20,7 @@ import { routeFor, routeCost } from './routing.js';
 import { isDead } from './combat.js';
 import { squadTile } from './sea.js';
 import { squadPosition } from './position.js';
+import { casualty } from './casualties.js';
 
 const B = THRONE.borrow;
 const EPS = 1e-9;
@@ -141,6 +142,7 @@ function processTide(battle, t) {
     if (at == null || !flooded.has(at)) continue;
     const lost = q.count * B.tideLoss;
     q.count -= lost;
+    casualty(battle, q.owner, lost); // PLAN-PHASE17
     q.btide = b.tideN;
     const p = tileAt(battle, at);
     battle.events.push({ type: 'tideHit', squad: q.id, owner: q.owner, lost: Math.round(lost), x: p ? p.x : 0, y: p ? p.y : 0, borrowed: true });

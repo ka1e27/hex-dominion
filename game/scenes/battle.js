@@ -32,10 +32,12 @@ import {
   trackerOf, evaluateBattle, crownBonus, swiftDeadlineSec,
 } from '../meta/crowns.js';
 import { CROWN_BONUS_PCT } from '../app/crownCopy.js';
+import { defeatTip, afterActionLine } from '../app/defeatTip.js';
+import { costliestSite } from '../battle/casualties.js';
 import { sabotageBattleNote, sabotageLevel } from '../meta/intel.js';
 import { calmUnrest } from '../meta/unrest.js';
 import { battleIntensity, battleAssault } from '../audio/musicIntensity.js';
-import { POWERS, SUPPLY } from '../config/battle.js';
+import { POWERS, SUPPLY, AFTER_ACTION } from '../config/battle.js';
 import { FRONTIER } from '../config/frontier.js';
 import { EVENTS } from '../config/events.js';
 import { attackArenaOpts } from '../meta/frontier.js';
@@ -131,6 +133,7 @@ export function createBattleScene(services) {
   let defeatAtMs = 0;
   let leaving = null;
   let resultsShown = false;
+  let defeatMark = null; // { site, nextMs }: the settlement the defeat card names pulses red behind it (PLAN-PHASE17)
   let continuing = false; // Continue pressed on a win: the Relic moment / Boon draft play before the scene leaves
   let lastResult = null;
   let crownResult = null; // { summary, crowns, parSec } once a win is decided
@@ -521,18 +524,15 @@ export function createBattleScene(services) {
     skipBtn.hidden = !on;
   }
 
+  // a tip never names a power the player cannot use here (Iron Will, Holy Ground, not unlocked): "soften them with Firestorm" read as a cruel joke
+  const usablePower = (id) => (battle.player.powers[id] || 0) >= 1 && !noPowers() && !feat.powerFlags(id).holy;
+
   function situationalTip() {
-    const region = world.regions[regionId];
-    const hasFort = region.settlements.some((id) => world.settlements[id].type === 'fort');
-    // a tip never names a power the player cannot use here (Iron Will, Holy Ground, not unlocked): "soften them with Firestorm" read as a cruel joke
-    const usable = (id) => (battle.player.powers[id] || 0) >= 1 && !noPowers() && !feat.powerFlags(id).holy;
-    if (hasFort) return usable('firestorm') ? 'Forts defend at 1.8× — soften them with Firestorm first.' : 'Forts defend at 1.8× — take the settlements around one first, then hit it with one big send.';
-    if (battle.stats.sent > 0 && battle.stats.captured === 0) {
-      return usable('rally') ? 'Try sending from more than one settlement at once, or use Rally to hit all at once.' : 'Try sending from more than one settlement at once: a squad that arrives alone just feeds the garrison.';
+    if (lastResult === 'retreat') {
+      const line = afterActionLine(battle, world, usablePower);
+      return line ? `No harm done. ${line}` : 'No harm done. Spend gold in the War Council and come back stronger.';
     }
-    if (battle.stats.sent === 0) return 'Drag from your War Camp to a settlement to send troops — the fight will not start itself.';
-    if (battle.stats.lost > battle.stats.killed * 1.4) return 'Upgrade Muster or Steel in the War Council: you are trading troops badly.';
-    return undefined;
+    return defeatTip(battle, world, regionId, usablePower); // PLAN-PHASE17: names the settlement that broke the attack when one did
   }
 
   function showResults() {
@@ -585,8 +585,10 @@ export function createBattleScene(services) {
         durationSec: battle.stats.durationSec,
         troopsLost: battle.stats.lost,
         troopsKilled: battle.stats.killed,
-        tip: lastResult === 'retreat' ? 'No harm done. Spend gold in the War Council and come back stronger.' : situationalTip(),
+        tip: situationalTip(),
       });
+      const worst = costliestSite(battle, AFTER_ACTION);
+      defeatMark = worst ? { site: worst.site, nextMs: 0 } : null;
     }
     ui.results.el.hidden = false;
     ui.battleHud.el.hidden = true;
@@ -1892,6 +1894,11 @@ export function createBattleScene(services) {
 
     if (phase === 'victory' && victory) updateVictory(nowMs);
     if (phase === 'defeat' && !resultsShown && nowMs - defeatAtMs >= DEFEAT.bannerFallMs) showResults();
+    if (phase === 'defeat' && resultsShown && defeatMark && nowMs >= defeatMark.nextMs && !reduceMotion()) {
+      defeatMark.nextMs = nowMs + DEFEAT.markPulseMs;
+      const p = siteWorldPos(defeatMark.site);
+      fx.spawn('shockwave', p.x, p.y, { color: ACCENTS.bad, growth: 2.2, duration: 0.9, thickness0: 0.09, thickness1: 0.02 });
+    }
     if (phase === 'leaving' && leaving) {
       const k = Math.min(1, (nowMs - leaving.startMs) / leaving.ms);
       dimAlpha = leaving.from * (1 - k);

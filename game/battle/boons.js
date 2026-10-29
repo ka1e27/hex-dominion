@@ -14,6 +14,7 @@ import { tileAt } from './runtime.js';
 import { squadPosition } from './position.js';
 import { worldDist, hexRadiusToWorld } from './geom.js';
 import { twistOf } from './features.js';
+import { casualty } from './casualties.js';
 
 const NONE = Object.freeze({});
 const ROUGH = new Set(['forest', 'pine', 'marsh']);
@@ -250,6 +251,7 @@ export function onCapture(battle, site, defLost, t) {
       s.troops -= take;
       lost += take;
     }
+    casualty(battle, PLAYER_OWNER, lost); // Blood Price's toll is troops lost (PLAN-PHASE17)
     if (lost >= 1) trigger(battle, t, { boon: 'bloodPrice', site: site.id, count: Math.round(lost), ...pos });
   }
   if (b.plunder) trigger(battle, t, { boon: 'plunderers', site: site.id, ...pos });
@@ -325,13 +327,20 @@ export function processBoons(battle, dt, t) {
     for (const q of battle.squads) {
       if (q.owner === PLAYER_OWNER) continue;
       const p = squadPosition(battle, q);
-      for (const z of fx.scorch) if (worldDist(p, z) <= z.r) q.count = Math.max(0, q.count - z.dps * dt);
+      for (const z of fx.scorch) {
+        if (worldDist(p, z) > z.r) continue;
+        const before = q.count;
+        q.count = Math.max(0, q.count - z.dps * dt);
+        casualty(battle, q.owner, before - q.count); // PLAN-PHASE17
+      }
     }
   }
   for (const q of battle.squads) {
     if (!q.burn) continue;
     if (t > q.burn.until) { delete q.burn; continue; }
+    const before = q.count;
     q.count = Math.max(0, q.count - q.burn.dps * dt);
+    casualty(battle, q.owner, before - q.count);
   }
   if (fx.scorch.length || battle.squads.some((q) => q.count < 0.5)) battle.squads = battle.squads.filter((q) => q.count >= 0.5);
   if (b.martyrSurge > 0 && !fx.martyrDone) {

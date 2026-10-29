@@ -86,6 +86,7 @@ export const VICTORY = Object.freeze({
 
 export const DEFEAT = Object.freeze({
   bannerFallMs: 500,
+  markPulseMs: 1600, // PLAN-PHASE17: while the defeat card names a settlement, a red ring pulses on it (off under Reduce Motion)
 });
 
 /**
