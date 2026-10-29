@@ -801,3 +801,8 @@ Sonnet 5.5 (`sonnet55-engineer`) is no longer preferred.
   (bookkeeping only; an A/B of nine bot battles gave byte-identical state). The player's losses per site (stats.fellAt) let
   the defeat AND retreat cards name the settlement that broke the attack, with advice for its kind and a red pulse on it.
   "Trading badly" now needs lost > 2 × killed. npm 1265.
+  Gate: npm 1265 (the frontlines think-timing test flakes only while a browser runs alongside; 3/3 alone), checkpure ok,
+  full check.mjs 2533 ok with 2 FAIL: the modulepreload block (the two new modules; regenerated) and one phase5
+  layout-shift of 2.3 px on Quick Conquest (2/2 green rerun alone). Pushed on branch claude/phase17-honest-casualties,
+  NOT main: waits for "deploy Phase 17". Pre-existing, not fixed: tools/playtest.mjs's dynasty segment dies behind the
+  relic-claim veil after conquerRegions(999) (same on HEAD f0a3a3b).
