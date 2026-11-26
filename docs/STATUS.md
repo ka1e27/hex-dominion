@@ -824,3 +824,15 @@ Sonnet 5.5 (`sonnet55-engineer`) is no longer preferred.
     four minutes only the keep was left. The bot's every-40-s all-in fed it, and it won in the end (Victory and Unbroken; far past Swift's 1:54).
   Gate: npm 1266, checkpure ok, modulepreload up to date, full check.mjs ALL CHECKS PASSED (2594 ok, new `marks` section
   included, 0 console errors). Pushed to claude/phase17-honest-casualties; main untouched: waits for "deploy Phase 17".
+- **2026-11-26 PHASE 17, third round** at the user's "keep working, make no mistakes" (PLAN-PHASE17 17C, 17E; branch only):
+  - A Boon picked in its draft now marks the regions it made easier (▲), once the draft and any Duo reveal close.
+    `--only=marks` covers it with a real press on the HUD's Boon chip.
+  - That check found a stale toast: "A Boon awaits: tap the Boon chip" came back out of the dialog's toast queue after the
+    pick. Opening the draft now withdraws it.
+  - The audits outside the gate:
+    - hints.mjs: ALL HINTS PLACED at all seven viewports.
+    - iconcheck.mjs: all icons centred, every touch target at least 44 px.
+    - a11ycheck.mjs: one real miss, Settings' Text size buttons at 36 px on a phone; now 44 px, all a11y checks pass.
+  - Measured, not changed: near-line Fair fights in Dynasty I run long for the bot (median 141 s) and the first-timer
+    policy (189 s). Most of that time comes before the keep stands alone, so this is not a keep wall. Table in PLAN-PHASE17
+    17E.

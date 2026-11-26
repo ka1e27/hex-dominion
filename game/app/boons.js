@@ -110,6 +110,8 @@ export function createBoons({ getState, getWorld, ui, services, sfx, tutorial })
     const d = (draftCtx = ctx, draftData());
     if (!d) { draftCtx = null; ctx.then?.(); return false; }
     seenOffer = offerSig(getState());
+    // the draft is the offer: "A Boon awaits, tap the chip" is done, and must not come back out of the dialog's toast queue after the pick
+    ui.toasts.dismissId?.('boon-pending');
     ui.boonDraft.update(d);
     ui.boonDraft.show();
     introduce();

@@ -5,6 +5,7 @@
   .council-tab { min-height: 44px; padding-inline: var(--sp-4); }
   .council-buymax { min-height: 44px; padding-inline: var(--sp-4); }
   .intel-btn, .works-build, .works-upgrade, .works-keep, .works-demolish, .works-back, .region-card-action, .btn { min-height: 44px; }
+  .opt-radio { min-height: 44px; } /* Settings' Text size choices were 36 px tall on a phone (tools/a11ycheck.mjs, PLAN-PHASE17) */
   .settings-slider { min-height: 44px; }
   .settings-toggle, .battle-auto, .upgrade-card-buy, .pill[role='button'] { position: relative; }
   /* the switch is 44 x 26 to look at: its hit area is 44 x 44 */

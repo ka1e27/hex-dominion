@@ -196,6 +196,7 @@ async function scenario(open, BASE, ok, sleep, allErrors, { width, height, mobil
       ok(await t.waitFor((id) => window.__hd.state.boons2.owned.includes(id), 4000, boon.id), tag(`${boon.name} is owned`));
       ok(await t.waitFor(() => { const d = document.querySelector('.boon-draft'); return !d || d.hidden; }, 8000), tag('the draft closes'));
       ok(await t.waitFor((w) => [...document.querySelectorAll('.toasts > .toast')].some((n) => (n.dataset.message || n.textContent).includes(w)), 4000, `▲ ${want[0]}`), tag(`then: "▲ ${want[0]} ..." (${JSON.stringify(await toasts())})`));
+      ok(!(await toasts()).some((m) => /A Boon awaits/.test(m)), tag('and no stale "A Boon awaits" once it is chosen'));
       const m = await marked();
       ok(boon.flipped.every((id) => m.includes(id)), tag(`the map marks ${want.join(', ')}`));
     }

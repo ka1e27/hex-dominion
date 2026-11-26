@@ -1,7 +1,7 @@
 # Phase 17: Honest numbers, a defeat that explains itself
 
-Status: **built, 2026-10-29; second round 2026-11-26** (17A's kill rule, 17C, 17D). Lead: the Claude session (small enough to do
-without engineers).
+Status: **built, 2026-10-29; second and third rounds 2026-11-26** (17A's kill rule, 17C, 17D, 17E). Lead: the Claude session
+(small enough to do without engineers).
 
 **Why this phase.** A first-session playtest (tools/playtest.mjs, desktop, seed 7) won its third battle by sending 244
 troops into a keep that had grown to 98, and the results card read **"3 killed · 0 lost"**. The card's two battle numbers
@@ -68,16 +68,21 @@ were wrong in every fight, and the one tip a losing player gets never said what 
   - a Work, which helps the battles next door
   - a General's skill (the card credits its default commander)
   - a mercenary hired
+  - a Boon (some change attack or the War Camp, like Blood Price; Kingslayer thins a keep's starting garrison)
 - **Now.** All of these mark the region ▲ for 20 s, as the council does.
   - **One toast, not two.** A Work's own toast carries the news: "Barracks built in Lowshire · ▲ Corworth is easier now".
   - **Generals.** A skill or a hire posts "▲ Corworth is easier now", which waits until the Generals panel closes.
-- **Not covered.** Boon picks: they mostly happen in the post-battle sequence, where the map is busy with the conquest.
+  - **Boons.** app/boons.js takes the labels just before a pick (`services.labelMarks`, the world scene's own
+    frontierRanks / noteEasier) and posts the news once the draft, and a Duo's reveal, have closed.
+- **Not covered.** A Relic, claimed in the conquest's own moment (the Seer's Lens, for one, scouts every region).
+  The map is busy with that conquest just then.
 - **A check at last.** 16C had none (probes and screenshots only). `node tools/check.mjs --only=marks` (tools/labelMarkChecks.mjs)
   covers desktop and phone. A search finds each stage, so a retune never breaks it:
   - a Work that changes nothing: no ▲ in its toast, no mark
   - a Work that flips a neighbour: one toast with the ▲, and the mark
   - the marks gone 20 s later
   - a council purchase: the ▲ toast once the council closes, and the mark
+  - a Boon picked through the HUD's chip and the draft: the ▲ toast once the draft closes, the mark, and no stale toast
   - `window.__hd.improvedRegions()` (dev) lists the marked regions.
 
 ## 17D. Small fixes
@@ -91,6 +96,27 @@ were wrong in every fight, and the one tip a losing player gets never said what 
 - **tools/firstHourBot.mjs** never attacked on a phone: its on-screen test kept 420 px clear for the desktop region card,
   which is below zero at 390 px wide. It now uses the phone's own margins (the card is a bottom sheet there).
 
+## 17E. What the audits outside the gate found (third round)
+- **tools/hints.mjs:** ALL HINTS PLACED at all seven viewports, measured after every frame (worst pointer 6.8 px, inside the
+  8 px rule).
+- **tools/iconcheck.mjs:** every icon centred, every icon button's touch target at least 44 px.
+- **tools/a11ycheck.mjs** found one real miss. On a phone, Settings' Text size choices (Normal / Large / Larger) were 36 px
+  tall, under the 44 px touch target DESIGN §7.5a requires. a11y.css raises them to 44 px on a finger, like the council's
+  tabs. Now ALL ACCESSIBILITY CHECKS PASSED; the options and textaudit sections are green (618 checks).
+- **A stale toast,** found by the new Boon step. "A Boon awaits: tap the Boon chip" is posted when an offer appears. Tapping
+  the chip while it showed parked it in the dialog's toast queue, and closing the draft brought it back out, after the
+  Boon was chosen. Opening the draft now withdraws it (`toasts.dismissId('boon-pending')`), and the check asserts it.
+- **Measured, not changed:** how long Easy and Fair Dynasty I fights take. Six worlds, the closest-to-the-line rung that
+  reads Easy or Fair in each region:
+
+  | Policy | Label | Won | Median | Over 150 s | Long fights: only the keep left |
+  |---|---|---|---|---|---|
+  | Optimiser bot | Fair | 72 of 117 | 141 s | 50 | 15% of their time |
+  | First-timer (balance.mjs decideHuman) | Fair | 45 of 117 | 189 s | 64 | 35% of their time |
+
+  Near-even fights run long for both policies, and most of that time is spent before the keep stands alone. This is not
+  a keep-specific wall; it is a lead for a future pacing pass.
+
 ## QA
 - `npm test`
 - `node tools/checkpure.js`
@@ -98,4 +124,5 @@ were wrong in every fight, and the one tip a losing player gets never said what 
 - a real-browser retreat at 1440×900 and 390×844 (the line fits in four lines on a phone)
 - the victory card's rows in a real browser (17A)
 - `node tools/check.mjs --only=marks` (17C)
+- `node tools/hints.mjs`, `node tools/a11ycheck.mjs`, `node tools/iconcheck.mjs` (17E)
 - the full `node tools/check.mjs`
