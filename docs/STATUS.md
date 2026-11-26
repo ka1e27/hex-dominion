@@ -822,3 +822,5 @@ Sonnet 5.5 (`sonnet55-engineer`) is no longer preferred.
     6 battles) now meets every target: 0.9 interruptions a minute after minute 5, busiest minute 5, no repeated hint.
   - Lead for the next balance pass, not changed: in that run a Fair fight (Fjordstone, ratio 1.25) lasted 330 s. For about
     four minutes only the keep was left. The bot's every-40-s all-in fed it, and it won in the end (Victory and Unbroken; far past Swift's 1:54).
+  Gate: npm 1266, checkpure ok, modulepreload up to date, full check.mjs ALL CHECKS PASSED (2594 ok, new `marks` section
+  included, 0 console errors). Pushed to claude/phase17-honest-casualties; main untouched: waits for "deploy Phase 17".
