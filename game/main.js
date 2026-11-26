@@ -993,6 +993,8 @@ function boot() {
   services.dynasty = createDynasty({ getState: () => cur().state, getWorld: () => cur().world, container, ui, services });
   services.boons = createBoons({ getState: () => cur().state, getWorld: () => cur().world, ui, services, sfx, tutorial });
   services.onBoonsChanged = () => { if (sceneManager.name === 'world') { worldScene.updateHudNow?.(); worldScene.refreshRealmIfOpen?.(); } };
+  // PLAN-PHASE17: a Boon picked in its draft marks the frontier regions it made easier ("▲"), like a War Council purchase
+  services.labelMarks = { before: () => worldScene.frontierRanks(), after: (before) => worldScene.noteEasier(before) };
   services.quick = createQuickConquest({ getState: () => cur().state, getWorld: () => cur().world, ui, services });
   services.onQuickReady = () => { if (sceneManager.name === 'world') worldScene.devRefreshCard(); };
   services.sceneName = () => sceneManager.name;

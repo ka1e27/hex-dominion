@@ -7,7 +7,8 @@
 //   2. a Work built next to a frontier region it makes easier: ONE toast, "<Work> built in <region> · ▲ <neighbour> is easier now", and the mark
 //   3. the marks are gone 20 s later
 //   4. a War Council purchase that makes a label easier: once the council closes, "▲ <region> is easier now", and the mark
-//   5. no console errors
+//   5. a Boon picked in its draft (opened with a real press on the HUD's Boon chip) that makes a label easier: the same, once the draft closes
+//   6. no console errors
 import { makeOpen } from './robustChecks.mjs';
 
 const INIT = 'window.__HD_TEST_NO_BOON_MOMENTS = true; window.__HD_TEST_NO_PACING = true;';
@@ -22,6 +23,8 @@ const SEARCH = async (mode) => {
   const { WORK_TYPES } = await imp('game/config/works.js');
   const { buy, UPGRADES } = await imp('game/meta/upgrades.js');
   const { bestFreeGeneral } = await imp('game/meta/generals.js');
+  const { ensureBoons2 } = await imp('game/meta/boonsState.js');
+  const { BOON_LIST } = await imp('game/config/boons.js');
   const { commanderFor } = await imp('game/meta/edicts.js');
   const RANK = { Easy: 0, Fair: 1, Hard: 2, Deadly: 3 };
   const ranks = (st) => new Map(frontier(st, hd.world).map((id) => {
@@ -40,6 +43,17 @@ const SEARCH = async (mode) => {
         if (!buy(st, id)) continue;
         const flipped = easier(before, ranks(st));
         if (flipped.length) return { lv, id, name: UPGRADES[id].name, flipped };
+      }
+      continue;
+    }
+    if (mode === 'boon') {
+      const owned = ensureBoons2(base).owned;
+      const free = BOON_LIST.filter((b) => !owned.includes(b.id));
+      for (const b of free) {
+        const st = structuredClone(base);
+        ensureBoons2(st).owned.push(b.id);
+        const flipped = easier(before, ranks(st));
+        if (flipped.length) return { lv, id: b.id, name: b.name, flipped, others: free.filter((x) => x.id !== b.id).slice(0, 2).map((x) => x.id) };
       }
       continue;
     }
@@ -164,6 +178,26 @@ async function scenario(open, BASE, ok, sleep, allErrors, { width, height, mobil
       ok(await t.waitFor((w) => [...document.querySelectorAll('.toasts > .toast')].some((n) => (n.dataset.message || n.textContent).includes(w)), 4000, `▲ ${want[0]}`), tag(`once it closes: "▲ ${want[0]} ..." (${JSON.stringify(await toasts())})`));
       const m = await marked();
       ok(buyIt.flipped.every((id) => m.includes(id)), tag(`the map marks ${want.join(', ')}`));
+      ok(await t.waitFor(() => window.__hd.improvedRegions().length === 0, 26000), tag('those marks are gone 20 s later too'));
+    }
+
+    // 5. a Boon picked in its draft (PLAN-PHASE17): the same news once the draft closes
+    const boon = await findStage('boon');
+    ok(!!boon, tag(`a Boon that makes a frontier region easier exists (${boon && `${boon.name} at Army level ${boon.lv}`})`));
+    if (boon) {
+      await q((lv, ups) => { for (const u of ups) window.__hd.state.upgrades[u] = Math.max(window.__hd.state.upgrades[u] || 0, lv); }, boon.lv, ARMY);
+      const want = await names(boon.flipped);
+      await q((ids) => window.__hd.offerBoons(ids, 'battle'), [boon.id, ...boon.others]);
+      ok(await t.waitFor(() => { const c = document.querySelector('.hud-boon-chip'); return !!c && !c.hidden && c.getClientRects().length > 0; }, 4000), tag('the HUD shows the Boon chip'));
+      ok(await t.clickSel('.hud-boon-chip'), tag('a press on the Boon chip'));
+      ok(await t.waitFor(() => { const d = document.querySelector('.boon-draft'); return !!d && !d.hidden && d.getClientRects().length > 0; }, 4000), tag('the draft opens'));
+      await sleep(600);
+      ok(await t.clickSel('.boon-card', boon.name), tag(`a press on ${boon.name}`));
+      ok(await t.waitFor((id) => window.__hd.state.boons2.owned.includes(id), 4000, boon.id), tag(`${boon.name} is owned`));
+      ok(await t.waitFor(() => { const d = document.querySelector('.boon-draft'); return !d || d.hidden; }, 8000), tag('the draft closes'));
+      ok(await t.waitFor((w) => [...document.querySelectorAll('.toasts > .toast')].some((n) => (n.dataset.message || n.textContent).includes(w)), 4000, `▲ ${want[0]}`), tag(`then: "▲ ${want[0]} ..." (${JSON.stringify(await toasts())})`));
+      const m = await marked();
+      ok(boon.flipped.every((id) => m.includes(id)), tag(`the map marks ${want.join(', ')}`));
     }
   } catch (e) {
     ok(false, tag(`unexpected error: ${e && e.stack}`));
@@ -176,7 +210,7 @@ async function scenario(open, BASE, ok, sleep, allErrors, { width, height, mobil
 }
 
 export async function labelMarkChecks({ launch, BASE, ok, sleep, allErrors }) {
-  console.log('\n== marks: "▲ easier now" after a Work and a War Council purchase, one toast, gone 20 s later ==');
+  console.log('\n== marks: "▲ easier now" after a Work, a War Council purchase and a Boon, one toast, gone 20 s later ==');
   const open = makeOpen(launch, sleep);
   await scenario(open, BASE, ok, sleep, allErrors, { width: 1440, height: 900, mobile: false, name: 'desktop' });
   await scenario(open, BASE, ok, sleep, allErrors, { width: 390, height: 844, mobile: true, name: 'phone' });

@@ -2179,6 +2179,9 @@ export function createWorldScene(services) {
     devCompleteRealm,
     /** Dev: the frontier regions marked "▲" right now (an upgrade just made them easier), for the checks. */
     devImproved() { return [...improvedIds]; },
+    // the "▲" marks for a change made outside this scene (a Boon picked in its draft, app/boons.js): the labels before it, then the comparison
+    frontierRanks,
+    noteEasier,
     devSurrender(id) { onSurrender(id); },
     devFlyToRegion,
     onCommander, onFestival, onMuster, onGeneralsOpen, onGeneralsClose, onTrain, onHeal, onRespec, onPickSkill, onHire, onWatchGeneral, updateGenerals,

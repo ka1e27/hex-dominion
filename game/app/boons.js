@@ -52,6 +52,7 @@ export function createBoons({ getState, getWorld, ui, services, sfx, tutorial })
   let seenOffer = offerSig(getState());       // the offer the player already knows about (opened, or told by a toast)
   let seenRelics = new Set(ownedIds());       // the Relics whose claim moment has played (or that were held before this session)
   let draftCtx = null;                        // { source, regionName, then } while the draft is open
+  let pickedBefore = null; // the frontier labels just before a pick (services.labelMarks), compared when the draft closes (PLAN-PHASE17)
   let missedNote = false;                     // the replaced-offer note, shown once on the next open
   let heldUnseen = false;                     // Phase 10A: an offer held back by the pacer was never shown, so a newer one replacing it is no "missed" pick
   // Phase 10A: the first Boon is a new system; it waits its turn (app/pacer.js). Once the Boons are known nothing waits.
@@ -76,6 +77,7 @@ export function createBoons({ getState, getWorld, ui, services, sfx, tutorial })
     claimQueue.length = 0;
     if (ui.boonDraft && ui.boonDraft.open) ui.boonDraft.hide();
     draftCtx = null;
+    pickedBefore = null;
   }
 
   // --- the draft -------------------------------------------------------------------------------------------------------------------------------
@@ -123,13 +125,17 @@ export function createBoons({ getState, getWorld, ui, services, sfx, tutorial })
     ui.boonDraft.hide();
     services.autosave?.save();
     services.onBoonsChanged?.();
+    // PLAN-PHASE17: a Boon that makes a frontier region easier says so, as the council does, once the draft (and a Duo's reveal) is gone
+    if (pickedBefore) { const before = pickedBefore; pickedBefore = null; services.labelMarks?.after(before); }
     ctx?.then?.();
   }
 
   function onPick(id) {
     const st = getState();
+    const before = services.labelMarks?.before() || null;
     const res = pickBoon(st, id);
     if (!res.ok) { ui.toasts.update({ type: 'warning', icon: 'boonCard', message: 'That Boon is no longer on offer.' }); closeDraft(); return; }
+    pickedBefore = before;
     tutorial?.notify('boonPicked');
     seenOffer = offerSig(st);
     sfx?.play('upgrade', { pitch: 1.25, volume: 0.7 });
