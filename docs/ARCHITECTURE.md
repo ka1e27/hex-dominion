@@ -323,7 +323,8 @@ BattleState = {
   commands: [], events: [],
   result: null | 'win' | 'lose' | 'retreat',
   stats: { sent, lost, killed, captured, durationSec, fellAt? },
-  // lost/killed: every troop that died, counted where it died (battle/casualties.js: clash, assault, arrows, powers, Tide...);
+  // lost: every troop of the player's that died; killed: every troop the PLAYER killed (not a faction's fight with the Free
+  // Folk). Each is counted where it died (battle/casualties.js: clash, assault, arrows, powers, Tide...);
   // fellAt { [siteId]: troops }: the player's losses against each site (assaulting it, under its arrows). Bookkeeping only:
   // no rule reads them (PLAN-PHASE17).
   nextId: number,

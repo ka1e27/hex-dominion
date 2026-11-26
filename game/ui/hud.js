@@ -245,7 +245,8 @@ export function createHud({ onCouncil, onRealm, onRegions, onSettings, onGeneral
     if (!show) { streakCount = 0; return; }
     const text = `×${(Math.round(st.mult * 10) / 10).toFixed(1)} · ${st.count}`;
     if (streakText.textContent !== text) streakText.textContent = text;
-    const sr = `Conquest streak ${st.count}: conquest bounty times ${(Math.round(st.mult * 10) / 10).toFixed(1)}, ${Math.ceil(st.remainingSec)} seconds to keep it`;
+    const left = Math.ceil(st.remainingSec);
+    const sr = `Conquest streak ${st.count}: conquest bounty times ${(Math.round(st.mult * 10) / 10).toFixed(1)}, ${left} ${left === 1 ? 'second' : 'seconds'} to keep it`;
     if (streakSr.textContent !== sr) streakSr.textContent = sr;
     streakChip.title = `Conquest streak: conquer again within ${Math.ceil(st.remainingSec)} s to keep it`;
     const frac = st.windowSec > 0 ? Math.max(0, Math.min(1, st.remainingSec / st.windowSec)) : 0;

@@ -119,16 +119,18 @@ export function createBot(page, { touch = false, W, H, log, shopStyle = 'three' 
     }, allowHard);
   }
   async function attack(target) {
-    const onScreen = async () => ev((id, w, h) => {
+    const onScreen = async () => ev((id, w, h, phone) => {
       const p = window.__hd.regionScreenPos(id);
-      if (!p || p.x < 60 || p.y < 120 || p.x > w - 420 || p.y > h - 120) return null;
+      // the open map: under the HUD, and clear of the desktop region card on the right (on a phone the card is a bottom sheet, and
+      // `w - 420` was below zero there, so no region was ever on screen and the phone run never attacked)
+      if (!p || p.x < (phone ? 24 : 60) || p.y < 120 || p.x > w - (phone ? 24 : 420) || p.y > h - (phone ? 150 : 120)) return null;
       // the keep's point, or a little beside it when a hint bubble or a label covers it (a person taps the open ground of the region)
       for (const [dx, dy] of [[0, 0], [0, 26], [26, 0], [-26, 0], [0, -26], [20, 20], [-20, 20]]) {
         const e = document.elementFromPoint(p.x + dx, p.y + dy);
         if (e && e.tagName === 'CANVAS') return { x: p.x + dx, y: p.y + dy };
       }
       return null;
-    }, target.id, W, H);
+    }, target.id, W, H, touch);
     let p = await onScreen();
     if (!p) { await ev((id) => window.__hd.flyToRegion(id), target.id); await sleep(1400); p = await onScreen(); }
     if (!p) { log(`  region ${target.id} not reachable on screen`); return false; }

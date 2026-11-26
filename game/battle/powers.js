@@ -154,7 +154,7 @@ export function processPending(battle, t) {
         if (worldDist(squadPosition(battle, squad), p) <= radius) {
           const before = squad.count;
           squad.count = Math.max(0, squad.count - p.damage);
-          casualty(battle, squad.owner, before - squad.count); // PLAN-PHASE17
+          casualty(battle, squad.owner, before - squad.count, p.owner); // PLAN-PHASE17
         }
       }
       for (const site of battle.sites) {
@@ -163,7 +163,7 @@ export function processPending(battle, t) {
         if (tile && worldDist(tile, p) <= radius) {
           const before = site.troops;
           site.troops = Math.max(0, site.troops - p.damage);
-          casualty(battle, site.owner, before - site.troops);
+          casualty(battle, site.owner, before - site.troops, p.owner);
         }
       }
       battle.events.push({ type: 'firestorm', x: p.x, y: p.y, radius: p.radius });

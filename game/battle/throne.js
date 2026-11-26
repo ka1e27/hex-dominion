@@ -142,7 +142,7 @@ function processTide(battle, t) {
     if (at == null || !flooded.has(at)) continue;
     const lost = q.count * B.tideLoss;
     q.count -= lost;
-    casualty(battle, q.owner, lost); // PLAN-PHASE17
+    casualty(battle, q.owner, lost, foe); // PLAN-PHASE17: the Usurper's borrowed Tide
     q.btide = b.tideN;
     const p = tileAt(battle, at);
     battle.events.push({ type: 'tideHit', squad: q.id, owner: q.owner, lost: Math.round(lost), x: p ? p.x : 0, y: p ? p.y : 0, borrowed: true });

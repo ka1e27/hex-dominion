@@ -75,13 +75,34 @@ test('a real arena: the counts survive a JSON round trip and stay finite and non
   assert.ok(fell <= battle.stats.lost + 1e-6, 'losses against sites are a part of all losses');
 });
 
+test('killed counts only what the player killed: a faction storming a Free Folk hamlet adds nothing to it', () => {
+  const tiles = [
+    { i: 0, q: 0, r: 0, x: 0, y: 0, cost: 1, terrain: 'grass', region: 0 },
+    { i: 1, q: 1, r: 0, x: Math.sqrt(3), y: 0, cost: 1, terrain: 'grass', region: 0 },
+    { i: 2, q: 2, r: 0, x: 2 * Math.sqrt(3), y: 0, cost: 1, terrain: 'grass', region: 0 },
+  ];
+  const sites = [
+    { id: 0, settlement: -1, tile: 0, type: 'camp', owner: 0, troops: 10 },
+    { id: 1, settlement: 0, tile: 1, type: 'hamlet', owner: 1, troops: 12 }, // Free Folk (owner 1)
+    { id: 2, settlement: 1, tile: 2, type: 'village', owner: 2, troops: 60 },
+  ];
+  const arena = { regionId: 0, enemyFaction: 2, tiles, sites, focus: { minX: 0, maxX: 2 * Math.sqrt(3), minY: 0, maxY: 0 } };
+  const battle = createBattle(arena, PLAYER, ENEMY, { seed: 1 });
+  issue(battle, { type: 'send', owner: 2, from: [2], to: 1, fraction: 1.0 }); // the faction takes the hamlet; the player never moves
+  let steps = 0;
+  do { step(battle, 0.05); steps++; } while (battle.squads.length > 0 && steps < 20000);
+  assert.equal(battle.sites[1].owner, 2, 'the faction took the hamlet');
+  assert.equal(battle.stats.killed, 0, 'none of it was the player\'s doing');
+  assert.equal(battle.stats.lost, 0);
+});
+
 test('costliestSite names a site only when it stands out', () => {
   const battle = { sites: [{ id: 0, type: 'camp' }, { id: 1, type: 'fort' }, { id: 2, type: 'village' }], stats: { lost: 0, killed: 0 } };
   assert.equal(costliestSite(battle, AFTER_ACTION), null, 'nothing lost');
-  casualty(battle, 0, 30, 1);
-  casualty(battle, 0, 8, 2);
-  casualty(battle, 0, 12); // the field
-  casualty(battle, 2, 40, 1); // enemy losses are never kept per site
+  casualty(battle, 0, 30, 2, 1);
+  casualty(battle, 0, 8, 2, 2);
+  casualty(battle, 0, 12, 2); // the field
+  casualty(battle, 2, 40, 0, 1); // enemy losses are never kept per site
   assert.equal(battle.stats.lost, 50);
   assert.equal(battle.stats.killed, 40);
   const worst = costliestSite(battle, AFTER_ACTION);
@@ -89,10 +110,10 @@ test('costliestSite names a site only when it stands out', () => {
   assert.equal(worst.lost, 30);
   assert.ok(Math.abs(worst.share - 0.6) < 1e-9);
   // spread out: no single site holds minShare of the losses
-  casualty(battle, 0, 40);
+  casualty(battle, 0, 40, 2);
   assert.equal(costliestSite(battle, AFTER_ACTION), null, `30 of 90 is under ${AFTER_ACTION.minShare}`);
   // too few to name
   const small = { sites: [{ id: 0 }, { id: 1 }], stats: { lost: 0, killed: 0 } };
-  casualty(small, 0, AFTER_ACTION.minLost - 1, 1);
+  casualty(small, 0, AFTER_ACTION.minLost - 1, 2, 1);
   assert.equal(costliestSite(small, AFTER_ACTION), null);
 });

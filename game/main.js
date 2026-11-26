@@ -1188,6 +1188,7 @@ function boot() {
       get goals() { return services.goals; },
       /** Dev/checks (Phase 5): own every region at once (the founding button shows), then the world refreshes. */
       completeRealm: () => worldScene.devCompleteRealm(),
+      improvedRegions: () => worldScene.devImproved(), // the "▲" marks on the map (PLAN-PHASE17 checks)
       get dynasty() { return services.dynasty; },
       /** Dev/checks (Phase 7): app/boons.js; an offer now (`offerBoons(['engineers', ...])` or `offerBoons('champion')`), Boons owned at once, a Relic placed. */
       get boons() { return services.boons; },

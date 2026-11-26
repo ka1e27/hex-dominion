@@ -806,3 +806,19 @@ Sonnet 5.5 (`sonnet55-engineer`) is no longer preferred.
   layout-shift of 2.3 px on Quick Conquest (2/2 green rerun alone). Pushed on branch claude/phase17-honest-casualties,
   NOT main: waits for "deploy Phase 17". Pre-existing, not fixed: tools/playtest.mjs's dynasty segment dies behind the
   relic-claim veil after conquerRegions(999) (same on HEAD f0a3a3b).
+- **2026-11-26 PHASE 17, second round** at the user's "make game better, make no mistakes" (docs/PLAN-PHASE17.md, still on branch
+  claude/phase17-honest-casualties, NOT main):
+  - `killed` now counts only what the player killed (casualty's `by`). Factions storming Free Folk sites had inflated it in
+    39 of 330 bot battles, by up to 39. The new test fails on the old rule. A/B against main, byte-identical state apart from stats:
+    330 full bot battles on four worlds, plus 432 on special worlds (the Tide, Dragons, the Throne, Ashen, Sea Kings,
+    Usurper).
+  - 17C: the green ▲ now follows a Work built or upgraded, a General's skill and a mercenary hire, as well as the council.
+    A Work's own toast carries the news: "Barracks built in Lowshire · ▲ Corworth is easier now". New check section
+    `--only=marks` (16C had none). It finds its stage by search, so a retune moves the stage, not the check.
+  - The victory card keeps "killed" beside "lost" (all 8 combinations of the optional stats, 390 and 1440 px).
+  - Three plural slips (the keyboard cursor, the streak chip's screen-reader line, the Chronicle's Best Daily).
+  - Tools: playtest.mjs taps the Relic claims away and reaches the founding and a Dynasty II battle again. firstHourBot
+    never attacked on a phone (its desktop card margin went below zero at 390 px). A phone first-hour run (15 min,
+    6 battles) now meets every target: 0.9 interruptions a minute after minute 5, busiest minute 5, no repeated hint.
+  - Lead for the next balance pass, not changed: in that run a Fair fight (Fjordstone, ratio 1.25) lasted 330 s. For about
+    four minutes only the keep was left. The bot's every-40-s all-in fed it, and it won in the end (Victory and Unbroken; far past Swift's 1:54).

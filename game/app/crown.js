@@ -147,7 +147,7 @@ export function createCrown({ getState, getWorld, ui, services, camera, storage,
     deeds.push(['Relics found', `${r.relics.found} / ${r.relics.total}`]);
     if (r.vendettasWon) deeds.push(['Vendettas won', String(r.vendettasWon)]);
     if (r.dragonsSlain) deeds.push(['Dragons slain', String(r.dragonsSlain)]);
-    if (r.bestDaily) deeds.push(['Best Daily', `${clock(r.bestDaily.sec)} · ${r.bestDaily.crowns} crowns`]);
+    if (r.bestDaily) deeds.push(['Best Daily', `${clock(r.bestDaily.sec)} · ${plural(r.bestDaily.crowns, 'crown', 'crowns')}`]);
     sections.push({ id: 'deeds', icon: 'trophy', heading: 'Deeds of the reign', rows: deeds });
     const highs = (r.highlights || []).map((e) => { try { return chronicleText(e, { world }); } catch { return ''; } }).filter(Boolean);
     if (highs.length) sections.push({ id: 'highlights', icon: 'laurel', heading: 'Remembered', lines: highs });

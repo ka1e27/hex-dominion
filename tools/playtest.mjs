@@ -94,6 +94,26 @@ const click = async (sel, txt) => {
   return c;
 };
 
+// The moments a conquest plays over the map (a Relic claim, a General's duo reveal: each a tap to skip, several queue one after another) and the
+// Boon draft (a player can "Decide later"): tapped away the way a player would before reaching for the HUD. Returns how many it cleared.
+const MOMENTS = [['.relic-claim', '.relic-claim'], ['.duo-reveal', '.duo-reveal'], ['.boon-draft', '.boon-draft .boon-later']];
+const clearMoments = async (why) => {
+  for (let n = 0; n < 16; n++) {
+    const up = await ev((list) => {
+      const shown = (s) => [...document.querySelectorAll(s)].some((el) => !el.hidden && !el.closest('[hidden]') && el.getClientRects().length > 0);
+      const m = list.find(([sel]) => shown(sel));
+      return m || null;
+    }, MOMENTS);
+    if (!up) return n;
+    note(`${why}: ${up[0]} is on screen; a tap skips it`);
+    const c = await centerOf(up[1]);
+    if (c) await tap(c.x, c.y);
+    await settle(700);
+  }
+  note(`FRICTION: ${why}: moments still on screen after 16 taps`);
+  return 16;
+};
+
 // ---------------- instrumentation ------------------------------------------------------------------------
 const INSTRUMENT = () => {
   if (window.__qa) return;
@@ -564,6 +584,7 @@ if (flags.dynasty !== 'off') {
   await ev(() => window.__hd.conquerRegions(999));
   await settle(1800);
   note(`after conquering everything: owned ${(await D()).owned} of ${d1.regions}`);
+  await clearMoments('after conquering everything'); // the Relics those regions held play their claims one after another
   await click('.hud-btn[aria-label="Realm stats"]');
   await settle(1200);
   await shot('realm-complete');

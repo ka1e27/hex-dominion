@@ -114,7 +114,7 @@ function processTide(battle, t) {
     if (at == null || !flooded.has(at)) continue;
     const lost = q.count * TIDE.loss;
     q.count -= lost;
-    casualty(battle, q.owner, lost); // PLAN-PHASE17
+    casualty(battle, q.owner, lost, foe); // PLAN-PHASE17: the Tide is the fortress's
     q.tide = s.n;
     st.drowned = (st.drowned || 0) + lost; // the tally (results screen, tools)
     const p = tileAt(battle, at);
@@ -155,7 +155,7 @@ function processBroadside(battle, dt, t) {
     if (!s.coastal || s.owner === PLAYER_OWNER || !(s.troops > 0)) continue;
     const lost = s.troops * b.perSec * dt;
     s.troops -= lost;
-    casualty(battle, s.owner, lost);
+    casualty(battle, s.owner, lost, PLAYER_OWNER); // Broadside is the Admiral's (yours)
     b.acc[s.id] = (b.acc[s.id] || 0) + lost;
     if (b.acc[s.id] >= 1) {
       const count = Math.floor(b.acc[s.id]);

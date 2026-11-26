@@ -68,6 +68,7 @@ const { phase7Checks } = await import('./phase7Checks.mjs');
 const { phase12Checks } = await import('./phase12Checks.mjs');
 const { phase13Checks } = await import('./phase13Checks.mjs');
 const { codexChecks } = await import('./codexChecks.mjs');
+const { labelMarkChecks } = await import('./labelMarkChecks.mjs');
 const { topLaneChecks } = await import('./topLaneChecks.mjs');
 const { challengeChecks } = await import('./challengeChecks.mjs');
 const { optionsChecks } = await import('./optionsChecks.mjs'); // Phase 14: Play your way
@@ -1143,7 +1144,7 @@ const watchdog = setTimeout(() => {
 // layout-shift guard): it passed 32 min on a loaded machine and about 30 on the CI runner. A GitHub job may run 6 h; 60 leaves room without hiding a hang
 // (tools/cdp.js bounds Page.navigate at 45 s).
 
-// --only=desktop|phone|robust|keepsakes|playtest|frontier|generals|variety|goals|phase5|phase6|phase7|phase12|phase13|codex|toplane|challenges|options|textaudit|deploy runs one section (a,b runs several) (--shots=<dir> keeps the playtest screenshots). The robustness and keepsake scenarios (tools/robustChecks.mjs, tools/keepsakeChecks.mjs) run in the
+// --only=desktop|phone|robust|keepsakes|playtest|frontier|generals|variety|goals|phase5|phase6|phase7|phase12|phase13|codex|marks|toplane|challenges|options|textaudit|deploy runs one section (a,b runs several) (--shots=<dir> keeps the playtest screenshots). The robustness and keepsake scenarios (tools/robustChecks.mjs, tools/keepsakeChecks.mjs) run in the
 // plain mode only: they do not depend on the deployed shape, so --base=... runs the two variants and the deploy checks.
 const only = flags.only;
 const wants = (name) => !only || String(only).split(',').includes(name); // --only=a,b runs several
@@ -1179,6 +1180,7 @@ if (!SUBPATH && wants('phase7')) await section('phase7', () => phase7Checks({ la
 if (!SUBPATH && wants('phase12')) await section('phase12', () => phase12Checks({ launch, BASE, ok, sleep, allErrors }));
 if (!SUBPATH && wants('phase13')) await section('phase13', () => phase13Checks({ launch, BASE, ok, sleep, allErrors }));
 if (!SUBPATH && wants('codex')) await section('codex', () => codexChecks({ launch, BASE, ok, sleep, allErrors }));
+if (!SUBPATH && wants('marks')) await section('marks', () => labelMarkChecks({ launch, BASE, ok, sleep, allErrors }));
 if (!SUBPATH && wants('toplane')) await section('toplane', () => topLaneChecks({ launch, BASE, ok, sleep, allErrors }));
 if (!SUBPATH && wants('challenges')) await section('challenges', () => challengeChecks({ launch, BASE, ok, sleep, allErrors }));
 if (!SUBPATH && wants('options')) await section('options', () => optionsChecks({ launch, BASE, ok, sleep, allErrors }));

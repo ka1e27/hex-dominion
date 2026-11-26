@@ -954,7 +954,8 @@ export function createBattleScene(services) {
 
   function describeSite(site) {
     const who = site.owner === PLAYER_OWNER ? 'yours' : site.owner === FREE_FOLK_OWNER ? 'neutral' : `held by ${(world.factions[site.owner] || { name: 'the enemy' }).name}`;
-    return `${SITE_WORDS[site.type] || site.type}, ${who}, ${Math.round(site.troops)} troops`;
+    const n = Math.round(site.troops);
+    return `${SITE_WORDS[site.type] || site.type}, ${who}, ${n} ${n === 1 ? 'troop' : 'troops'}`;
   }
 
   /** What Enter would do on this settlement, in words: the live region reads it as the cursor lands. */

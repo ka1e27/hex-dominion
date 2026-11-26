@@ -77,14 +77,21 @@ export function createResults({ onContinue, onRetry, onBackToMap, onCrown, crown
         bodyEl.appendChild(h('p.results-crown-tip', {}, 'Win faster, or without losing a settlement, for more crowns.'));
       }
     }
-    bodyEl.appendChild(h('div.results-stats-grid', {},
+    // Two to a row, and "killed" always beside "lost": the clock fills an odd row of gains before them, or follows them.
+    const gains = [
       stat('coin', `+${shortNumber(data.bounty || 0)} bounty`, '.icon-gold'),
       data.crownBonus > 0 ? stat('crown', `+${shortNumber(data.crownBonus)} crown bonus`, '.icon-gold') : null,
       stat('coin', `+${formatRate(data.newIncome || 0)}/s income`, '.icon-good'),
       data.perk ? stat(data.perk.icon, data.perk.name) : null,
-      stat('clock', formatClock(data.durationSec || 0)),
+    ].filter(Boolean);
+    const clock = stat('clock', formatClock(data.durationSec || 0));
+    const odd = gains.length % 2 === 1;
+    bodyEl.appendChild(h('div.results-stats-grid', {},
+      ...gains,
+      odd ? clock : null,
       stat('sword', `${Math.round(data.troopsKilled || 0)} killed`, '', Math.round(data.troopsKilled || 0)),
       stat('boot', `${Math.round(data.troopsLost || 0)} lost`, '.icon-bad', Math.round(data.troopsLost || 0)),
+      odd ? null : clock,
       data.tideTook > 0 ? stat('tide', `The Tide took ${Math.round(data.tideTook)}`, '.icon-bad') : null, // the Tide Fortress (Phase 12)
     ));
     bodyEl.appendChild(h('button.btn.btn-primary.btn-block.results-action', { onClick: () => onContinue?.() }, 'Continue'));

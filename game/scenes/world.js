@@ -135,6 +135,7 @@ export function createWorldScene(services) {
 
   // Upgrades made visible (backlog "label arrows"): a purchase that makes a frontier region's label easier marks it "▲" on the map, so the
   // loop "fight, then upgrade" shows what the upgrade bought. The marks last while the council is open and 20 s after it closes.
+  // PLAN-PHASE17: the same for a Work built or upgraded (it helps the battles next door), a General's skill and a mercenary hired.
   const LABEL_RANK = { Easy: 0, Fair: 1, Hard: 2, Deadly: 3 };
   const improvedIds = new Set();
   let improvedUntilMs = 0;
@@ -144,17 +145,28 @@ export function createWorldScene(services) {
     for (const id of frontier(state, world)) out.set(id, LABEL_RANK[difficulty(state, world, id, { commander: commanderFor(id) }).label] ?? 0);
     return out;
   }
-  function noteEasier(before) {
+  /** Marks "▲" every frontier region whose label is easier than in `before` (a frontierRanks() taken before the change); returns their ids. */
+  function markEasier(before) {
     const after = frontierRanks();
     const gained = [];
     for (const [id, rank] of after) if (before.has(id) && rank < before.get(id) && !improvedIds.has(id)) { improvedIds.add(id); gained.push(id); }
-    if (!gained.length) return;
+    if (!gained.length) return gained;
     improvedUntilMs = performance.now() + 20000;
     markDirty();
-    const { world } = container.get();
-    const first = world.regions[gained[0]].name;
-    // posted now, shown when the council closes (no toast covers a dialog)
-    ui.toasts.update({ id: 'easier', icon: 'sword', type: 'success', message: gained.length === 1 ? `▲ ${first} is easier now` : `▲ ${first} and ${gained.length - 1} more ${gained.length === 2 ? 'region is' : 'regions are'} easier now`, duration: 4200 });
+    return gained;
+  }
+  /** "▲ Corworth is easier now", "▲ Corworth and 2 more regions are easier now". */
+  function easierWords(gained) {
+    const first = container.get().world.regions[gained[0]].name;
+    return gained.length === 1 ? `▲ ${first} is easier now` : `▲ ${first} and ${gained.length - 1} more ${gained.length === 2 ? 'region is' : 'regions are'} easier now`;
+  }
+  /** A toast that already tells of the change carries the news too, so one toast, not two: "Barracks built in Greenreach · ▲ Corworth is easier now". */
+  const withEasier = (message, gained) => (gained.length ? `${message} · ${easierWords(gained)}` : message);
+  function noteEasier(before) {
+    const gained = markEasier(before);
+    if (!gained.length) return;
+    // posted now, shown when the council (or the Generals panel) closes: no toast covers a dialog
+    ui.toasts.update({ id: 'easier', icon: 'sword', type: 'success', message: easierWords(gained), duration: 4200 });
   }
 
   function refreshDerived(nowMs) {
@@ -485,18 +497,22 @@ export function createWorldScene(services) {
   function onPickSkill(id, choice) {
     const { state } = container.get();
     const g = generalById(state, id);
+    const before = frontierRanks();
     if (!g || !pickSkill(g, choice)) { refused('That skill cannot be chosen now.'); return; }
     sfx.play('upgrade', { pitch: 1.1 });
     announce(`${g.name} learns a new skill`);
     tutorial.notify('skillPicked');
+    noteEasier(before); // the card credits its commander: a sharper General can make a region easier
     afterRenown();
   }
   function onHire() {
     const { state } = container.get();
+    const before = frontierRanks();
     const g = hireMercenary(state);
     if (!g) { refused('No mercenary can be hired now.'); return; }
     sfx.play('coin');
     announce(`${g.name} joins your cause`);
+    noteEasier(before);
     afterRenown();
   }
   function onWatchGeneral(id) {
@@ -957,20 +973,24 @@ export function createWorldScene(services) {
 
   function onBuildWork(regionId, slot, type) {
     const { state, world } = container.get();
+    const before = frontierRanks();
     const res = buildWork(state, world, regionId, type);
     if (!res) { refused('Not enough gold to build that.'); return; } // refused: nothing changed
     sfx.play('upgrade');
-    ui.toasts.update({ type: 'success', icon: 'castle', message: worksToast('built', { work: workName(type), region: world.regions[regionId].name }) });
+    const gained = markEasier(before); // a Work helps the battles next door: name the neighbour it made easier
+    ui.toasts.update({ type: 'success', icon: 'castle', message: withEasier(worksToast('built', { work: workName(type), region: world.regions[regionId].name }), gained) });
     afterWorksChange();
     tutorial.notify('workBuilt');
   }
 
   function onUpgradeWork(regionId, slot) {
     const { state, world } = container.get();
+    const before = frontierRanks();
     const res = upgradeWork(state, world, regionId, slot);
     if (!res) { refused('Not enough gold to upgrade that.'); return; }
     sfx.play('upgrade', { pitch: 1 + 0.12 * (res.level - 1) }); // a little higher at level III
-    ui.toasts.update({ type: 'success', icon: 'star', message: worksToast('upgraded', { work: workName(res.type), region: world.regions[regionId].name, level: res.level }) });
+    const gained = markEasier(before);
+    ui.toasts.update({ type: 'success', icon: 'star', message: withEasier(worksToast('upgraded', { work: workName(res.type), region: world.regions[regionId].name, level: res.level }), gained) });
     afterWorksChange();
   }
 
@@ -2157,6 +2177,8 @@ export function createWorldScene(services) {
     devConquer,
     devConquerRegion,
     devCompleteRealm,
+    /** Dev: the frontier regions marked "▲" right now (an upgrade just made them easier), for the checks. */
+    devImproved() { return [...improvedIds]; },
     devSurrender(id) { onSurrender(id); },
     devFlyToRegion,
     onCommander, onFestival, onMuster, onGeneralsOpen, onGeneralsClose, onTrain, onHeal, onRespec, onPickSkill, onHire, onWatchGeneral, updateGenerals,

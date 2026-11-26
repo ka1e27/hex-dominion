@@ -103,7 +103,7 @@ function breathe(battle, t) {
     if (worldDist(squadPosition(battle, q), { x, y }) <= r) {
       const before = q.count;
       q.count = Math.max(0, q.count - burn(q.count));
-      casualty(battle, q.owner, before - q.count); // PLAN-PHASE17
+      casualty(battle, q.owner, before - q.count, battle.arena.enemyFaction); // PLAN-PHASE17
       hits += 1;
     }
   }
@@ -112,7 +112,7 @@ function breathe(battle, t) {
     if (worldDist(tileAt(battle, s.tile), { x, y }) <= r) {
       const before = s.troops;
       s.troops = Math.max(0, s.troops - burn(s.troops) * (t < s.bulwarkUntil ? D.bulwarkCut : 1));
-      casualty(battle, s.owner, before - s.troops);
+      casualty(battle, s.owner, before - s.troops, battle.arena.enemyFaction);
       hits += 1;
     }
   }

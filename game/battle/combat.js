@@ -159,7 +159,7 @@ export function resolveTowerVolleys(battle, runtime, t) {
     const kills = onArrow(battle, site, best, cfg.volleyKills * stats.atk, t); // Phalanx cuts it; Fire Arrows ignite (PLAN-PHASE7)
     const beforeArrow = best.count;
     best.count = Math.max(0, best.count - kills);
-    casualty(battle, best.owner, beforeArrow - best.count, site.id); // PLAN-PHASE17: the tower that thinned the march is named
+    casualty(battle, best.owner, beforeArrow - best.count, site.owner, site.id); // PLAN-PHASE17: the tower that thinned the march is named
     const pos = squadPosition(battle, best);
     battle.events.push({
       type: 'arrow', site: site.id, squad: best.id,

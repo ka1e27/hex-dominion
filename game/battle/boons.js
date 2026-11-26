@@ -251,7 +251,7 @@ export function onCapture(battle, site, defLost, t) {
       s.troops -= take;
       lost += take;
     }
-    casualty(battle, PLAYER_OWNER, lost); // Blood Price's toll is troops lost (PLAN-PHASE17)
+    casualty(battle, PLAYER_OWNER, lost, null); // Blood Price's toll is troops lost (PLAN-PHASE17)
     if (lost >= 1) trigger(battle, t, { boon: 'bloodPrice', site: site.id, count: Math.round(lost), ...pos });
   }
   if (b.plunder) trigger(battle, t, { boon: 'plunderers', site: site.id, ...pos });
@@ -331,7 +331,7 @@ export function processBoons(battle, dt, t) {
         if (worldDist(p, z) > z.r) continue;
         const before = q.count;
         q.count = Math.max(0, q.count - z.dps * dt);
-        casualty(battle, q.owner, before - q.count); // PLAN-PHASE17
+        casualty(battle, q.owner, before - q.count, PLAYER_OWNER); // Scorched Earth: the player's Firestorm still burning (PLAN-PHASE17)
       }
     }
   }
@@ -340,7 +340,7 @@ export function processBoons(battle, dt, t) {
     if (t > q.burn.until) { delete q.burn; continue; }
     const before = q.count;
     q.count = Math.max(0, q.count - q.burn.dps * dt);
-    casualty(battle, q.owner, before - q.count);
+    casualty(battle, q.owner, before - q.count, PLAYER_OWNER); // Fire Arrows: only the player's towers set them burning
   }
   if (fx.scorch.length || battle.squads.some((q) => q.count < 0.5)) battle.squads = battle.squads.filter((q) => q.count >= 0.5);
   if (b.martyrSurge > 0 && !fx.martyrDone) {
